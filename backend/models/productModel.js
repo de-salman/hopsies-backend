@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const productSchema = mongoose.Schema({
     name:{
         type:String,
-        require:[true,'Please enter product name'],
+        required:[true,'Please enter product name'],
         trim:true
     },
     description:{
@@ -60,6 +60,11 @@ const productSchema = mongoose.Schema({
             }
         }        
     ],
+    user:{
+        type:mongoose.Schema.ObjectId,
+        ref:'User',
+        required:true,
+    },
     createdAt:{
         type:Date,
         default:Date.now
