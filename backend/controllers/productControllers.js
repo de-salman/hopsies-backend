@@ -1,36 +1,68 @@
 const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorHandler");
-const catchAsyncErrors= require('../middlewear/catchAsyncError')
-const ApiFeatures = require('../utils/apifeatures')
+const catchAsyncErrors = require("../middlewear/catchAsyncError");
+const ApiFeatures = require("../utils/apifeatures");
 //Create Product
 
-exports.createProduct =catchAsyncErrors(async (req, res, next) => {
-  req.body.user =req.user.id
+// exports.createProduct = catchAsyncErrors(async (req, res, next) => {
+//   req.body.user = req.user.id;
+//   const product = await Product.create(req.body);
+//   res.status(201).json({ success: true, product });
+// });
+
+exports.createProduct = catchAsyncErrors(async (req, res, next) => {
+  let images = [];
+
+  if (typeof req.body.images === "string") {
+    images.push(req.body.images);
+  } else {
+    images = req.body.images;
+  }
+
+  const imagesLinks = [];
+
+  for (let i = 0; i < images.length; i++) {
+    const result = await cloudinary.v2.uploader.upload(images[i], {
+      folder: "products",
+    });
+
+    imagesLinks.push({
+      public_id: result.public_id,
+      url: result.secure_url,
+    });
+  }
+
+  req.body.images = imagesLinks;
+  req.body.user = req.user.id;
+
   const product = await Product.create(req.body);
-  res.status(201).json({ success: true, product });
+
+  res.status(201).json({
+    success: true,
+    product,
+  });
 });
 
-exports.getAllProducts =catchAsyncErrors( async (req, res) => {
+exports.getAllProducts = catchAsyncErrors(async (req, res) => {
   const resultPerPage = 5;
   const productCount = await Product.countDocuments();
   const apiFeature = new ApiFeatures(Product.find(), req.query);
   apiFeature.search().filter().pagination(resultPerPage);
   const product = await apiFeature.query;
-  res.status(201).json({ success: true,productCount , product});
+  res.status(201).json({ success: true, productCount, product });
 });
 
-exports.getProductDetails =catchAsyncErrors(async(req,res,next)=>{
-  const product = await Product.findById(req.params.id)
-   if (!product) {
-      return next(new ErrorHandler("Product not found", 404));
-    }
- 
+exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return next(new ErrorHandler("Product not found", 404));
+  }
 
-    return res.status(200).json({
-      success: true,
-      product,
-    });
-})
+  return res.status(200).json({
+    success: true,
+    product,
+  });
+});
 exports.updateProduct = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
@@ -71,8 +103,6 @@ exports.deleteProduct = catchAsyncErrors(async (req, res, next) => {
     message: "product Deleted Successfully",
   });
 });
-
-
 
 // Create New Review or Update the review
 exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
