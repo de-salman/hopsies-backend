@@ -1,34 +1,23 @@
-const mongoose = require("mongoose");
-
-const sizeSchema = new Schema({
-  name: String,
-  stock: Number,
-});
-
-const variationSchema = new Schema({
-  color: String,
-  image: String,
-  size: [sizeSchema],
-});
+const mongoose = require('mongoose');
 
 const productSchema = mongoose.Schema({
   sku: {
     type: String,
-    required: [true, "Please enter SKU"],
+    required: [true, 'Please enter product SKU'],
+    unique: true,
   },
   name: {
     type: String,
-    required: [true, "Please enter product name"],
+    required: [true, 'Please enter product name'],
     trim: true,
   },
   price: {
     type: Number,
-    required: [true, "Please Enter Product Price"],
-    maxLength: [8, "Price cannot exceed 8 characters"],
+    required: [true, 'Please enter product price'],
   },
   discount: {
     type: Number,
-    maxLength: [8, "Price cannot exceed 8 characters"],
+    default: 0,
   },
   offerEnd: {
     type: Date,
@@ -37,7 +26,7 @@ const productSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  ratings: {
+  rating: {
     type: Number,
     default: 0,
   },
@@ -46,44 +35,43 @@ const productSchema = mongoose.Schema({
     default: 0,
   },
   category: {
-    type: Array,
-    required: [true, "Please Enter Product Category"],
+    type: [String],
+    required: [true, 'Please enter product category'],
   },
   tag: {
-    type: Array,
-    required: [true, "Please Enter Product Category"],
+    type: [String],
   },
-  variation: [variationSchema],
-  images: {
-    type: Array,
-    required: true,
-  },
-  stock: {
-    type: Number,
-    required: [true, "Plase Enter Product Stock"],
-    maxLength: [4, "Its cannot exceed 4 characters"],
-    default: 1,
-  },
-  numOfReviews: {
-    type: Number,
-    default: 0,
-  },
-  reviews: [
+  variation: [
     {
-      user: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      name: {
+      color: {
         type: String,
         required: true,
       },
-      rating: {
-        type: Number,
+      image: {
+        type: String,
         required: true,
       },
-      comment: {
+      size: [
+        {
+          name: {
+            type: String,
+            required: true,
+          },
+          stock: {
+            type: Number,
+            required: true,
+          },
+        },
+      ],
+    },
+  ],
+  images: [
+    {
+      public_id: {
+        type: String,
+        required: true,
+      },
+      url: {
         type: String,
         required: true,
       },
@@ -91,15 +79,10 @@ const productSchema = mongoose.Schema({
   ],
   shortDescription: {
     type: String,
-    required: [true, "please Enter product Short Description"],
-  },
-  fullDescription: {
-    type: String,
-    required: [true, "please Enter product Full Description"],
   },
   user: {
     type: mongoose.Schema.ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
   },
   createdAt: {
@@ -108,4 +91,4 @@ const productSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model('Product', productSchema);
