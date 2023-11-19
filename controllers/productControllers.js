@@ -10,19 +10,61 @@ const ApiFeatures = require("../utils/apifeatures");
 //   res.status(201).json({ success: true, product });
 // });
 
+// exports.createProduct = catchAsyncErrors(async (req, res, next) => {
+//   // let images = [];
+
+//   // if (typeof req.body.images === "string") {
+//   //   images.push(req.body.images);
+//   // } else {
+//   //   images = req.body.images;
+//   // }
+
+//   // const imagesLinks = [];
+
+//   // for (let i = 0; i < images.length; i++) {
+//   //   const result = await cloudinary.v2.uploader.upload(images[i], {
+//   //     folder: "products",
+//   //   });
+
+//   //   imagesLinks.push({
+//   //     public_id: result.public_id,
+//   //     url: result.secure_url,
+//   //   });
+//   // }
+
+//   // req.body.images = imagesLinks;
+//   req.body.user = req.user.id;
+
+//   const product = await Product.create(req.body);
+
+//   res.status(201).json({
+//     success: true,
+//     product,
+//   });
+// });
+
 exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-  // let images = [];
+  const {
+    id,
+    sku,
+    name,
+    price,
+    discount,
+    offerEnd,
+    new: isNew,
+    rating,
+    saleCount,
+    category,
+    tag,
+    variation,
+    // image,
+    shortDescription,
+  } = req.body;
 
-  // if (typeof req.body.images === "string") {
-  //   images.push(req.body.images);
-  // } else {
-  //   images = req.body.images;
-  // }
+  // let imagesLinks = [];
 
-  // const imagesLinks = [];
-
-  // for (let i = 0; i < images.length; i++) {
-  //   const result = await cloudinary.v2.uploader.upload(images[i], {
+  // for (let i = 0; i < image.length; i++) {
+  //   const result = await cloudinary.v2.uploader.upload(image[i], {
   //     folder: "products",
   //   });
 
@@ -32,16 +74,30 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
   //   });
   // }
 
-  // req.body.images = imagesLinks;
-  req.body.user = req.user.id;
-
-  const product = await Product.create(req.body);
+  const product = await Product.create({
+    id,
+    sku,
+    name,
+    price,
+    discount,
+    offerEnd,
+    new: isNew,
+    rating,
+    saleCount,
+    category,
+    tag,
+    variation,
+    // images: imagesLinks,
+    shortDescription,
+    user: req.user.id,
+  });
 
   res.status(201).json({
     success: true,
     product,
   });
 });
+
 
 exports.getAllProducts = catchAsyncErrors(async (req, res) => {
   const resultPerPage = 5;
