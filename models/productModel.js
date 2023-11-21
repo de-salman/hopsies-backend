@@ -41,6 +41,9 @@ const productSchema = mongoose.Schema({
   tag: {
     type: [String],
   },
+  image: {
+    type: [String],
+  },
   variation: [
     {
       color: {
@@ -78,6 +81,9 @@ const productSchema = mongoose.Schema({
     },
   ],
   shortDescription: {
+    type: String,
+  },
+  fullDescription: {
     type: String,
   },
   user: {
