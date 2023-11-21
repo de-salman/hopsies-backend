@@ -57,7 +57,7 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     category,
     tag,
     variation,
-    // image,
+    image,
     shortDescription,
   } = req.body;
 
@@ -87,6 +87,7 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     category,
     tag,
     variation,
+    image,
     // images: imagesLinks,
     shortDescription,
     user: req.user.id,
@@ -100,7 +101,7 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
 
 
 exports.getAllProducts = catchAsyncErrors(async (req, res) => {
-  const resultPerPage = 5;
+  const resultPerPage = 10;
   const productCount = await Product.countDocuments();
   const apiFeature = new ApiFeatures(Product.find(), req.query);
   apiFeature.search().filter().pagination(resultPerPage);
