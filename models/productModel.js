@@ -48,21 +48,21 @@ const productSchema = mongoose.Schema({
     {
       color: {
         type: String,
-        required: true,
+        // required: true,
       },
       image: {
         type: String,
-        required: true,
+        // required: true,
       },
       size: [
         {
           name: {
             type: String,
-            required: true,
+            // required: true,
           },
           stock: {
             type: Number,
-            required: true,
+            // required: true,
           },
         },
       ],
@@ -72,11 +72,11 @@ const productSchema = mongoose.Schema({
     {
       public_id: {
         type: String,
-        required: true,
+        // required: true,
       },
       url: {
         type: String,
-        required: true,
+        // required: true,
       },
     },
   ],

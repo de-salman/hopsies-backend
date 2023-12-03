@@ -2,6 +2,7 @@ const Product = require("../models/productModel");
 const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewear/catchAsyncError");
 const ApiFeatures = require("../utils/apifeatures");
+const cloudinary = require("cloudinary");
 //Create Product
 
 // exports.createProduct = catchAsyncErrors(async (req, res, next) => {
@@ -44,8 +45,9 @@ const ApiFeatures = require("../utils/apifeatures");
 // });
 
 exports.createProduct = catchAsyncErrors(async (req, res, next) => {
+  console.log(req.body,'heyyy')
   const {
-    id,
+
     sku,
     name,
     price,
@@ -60,22 +62,31 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     image,
     shortDescription,
   } = req.body;
+  // req.body.user = req.user.id;
 
-  // let imagesLinks = [];
+  let images = [];
 
-  // for (let i = 0; i < image.length; i++) {
-  //   const result = await cloudinary.v2.uploader.upload(image[i], {
-  //     folder: "products",
-  //   });
+  if (typeof req.body.images === "string") {
+    images.push(req.body.images);
+  } else {
+    images = req.body.images;
+  }
 
-  //   imagesLinks.push({
-  //     public_id: result.public_id,
-  //     url: result.secure_url,
-  //   });
-  // }
+  const imagesLinks = [];
+
+  for (let i = 0; i < images.length; i++) {
+    const result = await cloudinary.v2.uploader.upload(images[i], {
+      folder: "products",
+    });
+
+    imagesLinks.push({
+      public_id: result.public_id,
+      url: result.secure_url,
+    });
+  }
 
   const product = await Product.create({
-    id,
+    // id,
     sku,
     name,
     price,
@@ -88,7 +99,7 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     tag,
     variation,
     image,
-    // images: imagesLinks,
+    images: imagesLinks,
     shortDescription,
     user: req.user.id,
   });
