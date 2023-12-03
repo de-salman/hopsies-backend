@@ -1,6 +1,7 @@
 // Create Token and saving in cookie
 
 const sendToken = (user, statusCode, res) => {
+  console.log(res,'ress')
     const token = user.getJWTToken();
   
     // options for cookie

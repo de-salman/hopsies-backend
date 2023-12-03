@@ -14,9 +14,12 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(fileUpload())
 
 
-app.use(cors({
-    origin: '*'
-}));
+const corsOptions = {
+    origin: 'http://localhost:3000', // Replace with the actual origin of your frontend
+    credentials: true,
+  };
+  
+  app.use(cors(corsOptions));
 
 // Route imports
 const product =require('./routes/productRoute')

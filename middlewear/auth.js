@@ -4,6 +4,7 @@ const User =require('../models/userModel')
 const ErrorHandler = require("../utils/errorHandler");
 
 exports.isAuthenticatedUser = catchAsyncError(async (req, res, next) => {
+  console.log(req,'hiii');
   const { token } = req.cookies;
 
   if (!token) {
