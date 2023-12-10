@@ -66,11 +66,23 @@ const orderSchema = new mongoose.Schema({
   paymentInfo: {
     id: {
       type: String,
-      required: true,
+      // required: true,
     },
     status: {
       type: String,
       required: true,
+    },
+    razorpay_order_id: {
+      type: String,
+      // required: true,
+    },
+    razorpay_payment_id: {
+      type: String,
+      // required: true,
+    },
+    razorpay_signature: {
+      type: String,
+      // required: true,
     },
   },
   paidAt: {
