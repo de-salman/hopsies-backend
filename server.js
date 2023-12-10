@@ -1,10 +1,8 @@
 const app = require("./app");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary");
 
-// Config
-dotenv.config({ path: ".env" });
+
 
 // Connecting Database
 const connectDatabase = () => {
@@ -30,6 +28,12 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+export const instance = new Razorpay({
+  key_id: process.env.RAZORPAY_API_KEY,
+  key_secret: process.env.RAZORPAY_API_SECRET,
+});
+
 
 const server = app.listen(process.env.PORT, (req, res) => {
   console.log(`Server is woorking on http://localhost:${process.env.PORT}`);

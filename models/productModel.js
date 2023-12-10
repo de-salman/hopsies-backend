@@ -51,8 +51,14 @@ const productSchema = mongoose.Schema({
         // required: true,
       },
       image: {
-        type: String,
-        // required: true,
+        public_id: {
+          type: String,
+          // required: true,
+        },
+        url: {
+          type: String,
+          // required: true,
+        },
       },
       size: [
         {
@@ -61,7 +67,7 @@ const productSchema = mongoose.Schema({
             // required: true,
           },
           stock: {
-            type: Number,
+            type: String,
             // required: true,
           },
         },
@@ -95,6 +101,31 @@ const productSchema = mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  numOfReviews: {
+    type: Number,
+    default: 0,
+  },
+  reviews: [
+    {
+      user: {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+      },
+      rating: {
+        type: Number,
+        required: true,
+      },
+      comment: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 module.exports = mongoose.model('Product', productSchema);

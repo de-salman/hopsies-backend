@@ -3,51 +3,13 @@ const ErrorHandler = require("../utils/errorHandler");
 const catchAsyncErrors = require("../middlewear/catchAsyncError");
 const ApiFeatures = require("../utils/apifeatures");
 const cloudinary = require("cloudinary");
+const querystring = require('querystring');
 //Create Product
 
-// exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-//   req.body.user = req.user.id;
-//   const product = await Product.create(req.body);
-//   res.status(201).json({ success: true, product });
-// });
-
-// exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-//   // let images = [];
-
-//   // if (typeof req.body.images === "string") {
-//   //   images.push(req.body.images);
-//   // } else {
-//   //   images = req.body.images;
-//   // }
-
-//   // const imagesLinks = [];
-
-//   // for (let i = 0; i < images.length; i++) {
-//   //   const result = await cloudinary.v2.uploader.upload(images[i], {
-//   //     folder: "products",
-//   //   });
-
-//   //   imagesLinks.push({
-//   //     public_id: result.public_id,
-//   //     url: result.secure_url,
-//   //   });
-//   // }
-
-//   // req.body.images = imagesLinks;
-//   req.body.user = req.user.id;
-
-//   const product = await Product.create(req.body);
-
-//   res.status(201).json({
-//     success: true,
-//     product,
-//   });
-// });
 
 exports.createProduct = catchAsyncErrors(async (req, res, next) => {
-  console.log(req.body,'heyyy')
+  // console.log(req.body)
   const {
-
     sku,
     name,
     price,
@@ -59,34 +21,44 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     category,
     tag,
     variation,
-    image,
+    images,
     shortDescription,
+    fullDescription,
   } = req.body;
-  // req.body.user = req.user.id;
 
-  let images = [];
+  // Upload product images
+  const productImages = await Promise.all(
+    images.map(async (image) => {
+      const result = await cloudinary.v2.uploader.upload(image, {
+        folder: "products",
+      });
 
-  if (typeof req.body.images === "string") {
-    images.push(req.body.images);
-  } else {
-    images = req.body.images;
-  }
+      return {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    })
+  );
 
-  const imagesLinks = [];
+  // Upload variation images
+  const variationImages = await Promise.all(
+    variation.map(async (v) => {
+      if (v.image) {
+        const result = await cloudinary.v2.uploader.upload(v.image, {
+          folder: "products",
+        });
 
-  for (let i = 0; i < images.length; i++) {
-    const result = await cloudinary.v2.uploader.upload(images[i], {
-      folder: "products",
-    });
+        return {
+          public_id: result.public_id,
+          url: result.secure_url,
+        };
+      }
+      return null;
+    })
+  );
 
-    imagesLinks.push({
-      public_id: result.public_id,
-      url: result.secure_url,
-    });
-  }
-
+  // Create product with uploaded images
   const product = await Product.create({
-    // id,
     sku,
     name,
     price,
@@ -97,10 +69,17 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
     saleCount,
     category,
     tag,
-    variation,
-    image,
-    images: imagesLinks,
+    variation: variation.map((v, index) => ({
+      color: v.color,
+      image: variationImages[index], // Use the corresponding variation image
+      size: v.size.map((s) => ({
+        name: s.name,
+        stock: s.stock,
+      })),
+    })),
+    images: productImages,
     shortDescription,
+    fullDescription,
     user: req.user.id,
   });
 
@@ -182,8 +161,13 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
     rating: Number(rating),
     comment,
   };
+  const product = await Product.findById(productId)
+  if(product){
+    console.log(product,productId,'product')
 
-  const product = await Product.findById(productId);
+  }
+
+  
 
   const isReviewed = product.reviews.find(
     (rev) => rev.user.toString() === req.user._id.toString()
