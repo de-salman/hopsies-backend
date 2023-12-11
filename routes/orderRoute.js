@@ -6,12 +6,15 @@ const {
   getAllOrders,
   updateOrder,
   deleteOrder,
+  paymentVerification,
 } = require("../controllers/orderController");
 const router = express.Router();
 
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewear/auth')
 
+router.route("/paymentverification").post(paymentVerification);
 router.route("/order/new").post(isAuthenticatedUser, newOrder);
+
 
 router.route("/order/:id").get(isAuthenticatedUser, getSingleOrder);
 
